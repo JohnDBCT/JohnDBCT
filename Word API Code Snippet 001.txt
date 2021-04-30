@@ -1,0 +1,45 @@
+$("#run").click(() => tryCatch(run));
+
+async function run() {
+  await Word.run(async (context) => {
+    const body = context.document.body;
+    var oXS = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+    oXS.open("GET", "C:UsersjohndDocumentsWords.xml", true);
+    oXS.send();
+
+    showTheList;
+
+    await context.sync();
+  });
+}
+
+async function showTheList(xml) {
+  var divBooks = document.getElementById("Word List");
+  var NumID = xml.getElementsByTagName("ID"); // THE PARENT DIV.
+  var Word_List = xml.getElementsByTagName("Word Entry"); // THE XML TAG NAME.
+
+  for (var i = 0; i < Word_List.length; i++) {
+    // CREATE CHILD DIVS INSIDE THE PARENT DIV.
+    var divLeft = document.createElement("div");
+    divLeft.className = "col1";
+    divLeft.innerHTML = Word_List[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+
+    var divRight = document.createElement("div");
+    divRight.className = "col2";
+    divRight.innerHTML = Word_List[i].getElementsByTagName("Word Entry")[0].childNodes[0].nodeValue;
+
+    // ADD THE CHILD TO THE PARENT DIV.
+    divBooks.appendChild(divLeft);
+    divBooks.appendChild(divRight);
+  }
+
+  /** Default helper for invoking an action and handling errors. */
+  async function tryCatch(callback) {
+    try {
+      await callback();
+    } catch (error) {
+      // Note: In a production add-in, you'd want to notify the user through your add-in's UI.
+      console.error(error);
+    }
+  }
+}
